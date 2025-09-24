@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI 직업 크루</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      #loading {
+        display: none;
+        color: blue;
+      }
+      #resultOutput {
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin-top: 20px;
+        white-space: pre-wrap;
+      }
+      /* 버튼 비활성화 시 스타일 추가 */
+      button:disabled {
+        background-color: #a0a0a0;
+        cursor: not-allowed;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>궁금한 직업에 대해 물어보세요!</h1>
+
+    <input
+      type="text"
+      id="topicInput"
+      placeholder="예: 데이터 전문가, 백엔드 개발자"
+    />
+
+    <button id="runButton" onclick="runCrew()">정보 얻기</button>
+
+    <div id="loading">분석 중... 잠시만 기다려주세요.</div>
+
+    <hr />
+
+    <h2>결과물</h2>
+
+    <div id="resultOutput"></div>
+
+    <script>
+      async function runCrew() {
+        const topic = document.getElementById("topicInput").value;
+        const runButton = document.getElementById("runButton");
+        const loading = document.getElementById("loading");
+        const resultOutput = document.getElementById("resultOutput");
+
+        // 버튼 비활성화 및 로딩 메시지 표시
+        runButton.disabled = true;
+        loading.style.display = "block";
+        resultOutput.innerHTML = "";
+
+        try {
+          const response = await fetch("/run-crew", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ topic: topic }),
+          });
+
+          if (!response.ok) {
+            throw new Error("서버 오류 발생");
+          }
+
+          const data = await response.json();
+
+          resultOutput.innerHTML = data.result;
+        } catch (error) {
+          resultOutput.textContent = `오류: ${error.message}`;
+        } finally {
+          // 요청 완료 후 버튼 다시 활성화 및 로딩 메시지 숨기기
+          runButton.disabled = false;
+          loading.style.display = "none";
+        }
+      }
+    </script>
+  </body>
+</html>
