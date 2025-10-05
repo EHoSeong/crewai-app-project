@@ -15,7 +15,7 @@ load_dotenv()
 app = FastAPI()
 
 # LLM 객체와 툴은 앱 시작 시점에 한 번만 정의합니다.
-gemini_llm = LLM(model="gemini/gemini-1.5-flash", verbose=True, temperature=0.5)
+gemini_llm = LLM(model="gemini/gemini-2.5-flash", verbose=True, temperature=0.5)
 search_tool = SerperDevTool()
 
 # CORS 미들웨어 설정
