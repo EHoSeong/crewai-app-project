@@ -1,1 +1,13 @@
-myvenv
+.env
+
+ansible_key
+
+ansible_key.pub
+
+.git/
+
+myvenv/
+
+__pycache__/
+
+.vscode/, .idea/

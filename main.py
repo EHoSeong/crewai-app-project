@@ -163,9 +163,10 @@ async def run_crew(user_input: UserInput):
         result = project_crew.kickoff()
         final_output = result if isinstance(result, str) else result.raw
 
-        print("######## 분석끝 결과나왔음")
+        print("####### 분석끝 결과나왔음")
         return {"result": final_output}
 
     except Exception as e:
         print(f"Error occurred: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+    
