@@ -1,0 +1,6 @@
+- name: Deploy new application version to Kubernetes
+  hosts: kubernetes
+  become: no
+  tasks:
+    - name: Trigger a rolling restart of the deployment
+      command: kubectl rollout restart deployment crewai-app-deployment
