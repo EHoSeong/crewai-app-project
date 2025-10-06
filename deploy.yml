@@ -3,4 +3,4 @@
   become: no
   tasks:
     - name: Trigger a rolling restart of the deployment
-      command: command: KUBECONFIG=/home/hs/.kube/config kubectl rollout restart deployment crewai-app-deployment
+      command: KUBECONFIG=/home/hs/.kube/config kubectl rollout restart deployment crewai-app-deployment
