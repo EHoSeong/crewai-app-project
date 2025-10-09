@@ -1,6 +1,17 @@
+# deploy.yml (디버깅 모드)
+
 - name: Deploy new application version to Kubernetes
   hosts: kubernetes
   become: no
   tasks:
+    # 셸을 통해 명령어를 실행하고, 그 결과를 rollout_result 라는 변수에 저장합니다.
     - name: Trigger a rolling restart of the deployment
-      command: KUBECONFIG=/home/hs/.kube/config kubectl rollout restart deployment crewai-app-deployment
+      shell: "KUBECONFIG=/home/hs/.kube/config kubectl rollout restart deployment crewai-app-deployment"
+      register: rollout_result
+      # 이 명령어가 실패하더라도, 결과를 보기 위해 다음 debug 단계는 계속 실행합니다.
+      ignore_errors: true
+
+    # 위에서 저장한 rollout_result 변수에 담긴 모든 내용을 상세하게 출력합니다.
+    - name: Display rollout result
+      debug:
+        var: rollout_result
