@@ -15,25 +15,18 @@ jobs:
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }} # DOCKERHUB_USERNAME 으로 수정했습니다
-          password: ${{ secrets.DOCKERHUB_TOKEN }}    # DOCKERHUB_TOKEN 으로 수정했습니다
+          username: ${{ secrets.DOCKERHUB_USERNAME }} 
+          password: ${{ secrets.DOCKERHUB_TOKEN }}    
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/crewai-app:latest # DOCKERHUB_USERNAME 으로 수정했습니다
-
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/crewai-app:latest 
+  
   deploy:
-    runs-on: self-hosted # <-- 🌟 이 한 줄만 ubuntu-latest에서 변경되었습니다!
+    runs-on: self-hosted
     needs: build-and-push
     steps:
-      - name: Check out the repo
-        uses: actions/checkout@v3
-
-      # self-hosted runner는 VM 자신에게 명령을 내리는 것이므로
-      # SSH, inventory 설정이 모두 필요 없습니다.
-      - name: Run Ansible Playbook
-        run: |
-          pip install ansible
-          ansible-playbook deploy.yml # -i 옵션도 필요 없음
+      - name: Restart Kubernetes Deployment
+        run: KUBECONFIG=/home/hs/.kube/config kubectl rollout restart deployment crewai-app-deployment
