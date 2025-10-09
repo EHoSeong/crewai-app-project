@@ -1,52 +1,39 @@
-# 워크플로우의 이름
+# .github/workflows/main.yml (최종)
+
 name: CI/CD - Build and Deploy
 
-# 워크플로우가 시작될 조건
 on:
   push:
     branches: [ "main" ]
 
-# 실행될 작업(Job) 정의
 jobs:
-  # 첫 번째 작업: Docker 이미지 빌드 및 푸시
   build-and-push:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
+          username: ${{ secrets.DOCKERHUB_USERNAME }} # DOCKERHUB_USERNAME 으로 수정했습니다
+          password: ${{ secrets.DOCKERHUB_TOKEN }}    # DOCKERHUB_TOKEN 으로 수정했습니다
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/crewai-app:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/crewai-app:latest # DOCKERHUB_USERNAME 으로 수정했습니다
 
-  # 두 번째 작업: Ansible로 Kubernetes에 배포
   deploy:
-    runs-on: ubuntu-latest
-    needs: build-and-push # build-and-push 작업이 성공해야만 시작
+    runs-on: self-hosted # <-- 🌟 이 한 줄만 ubuntu-latest에서 변경되었습니다!
+    needs: build-and-push
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
 
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Create Ansible Inventory
-        run: |
-          echo "[kubernetes]" > inventory.ini
-          echo "${{ secrets.ANSIBLE_HOST }} ansible_user=${{ secrets.ANSIBLE_USER }}" >> inventory.ini
-
+      # self-hosted runner는 VM 자신에게 명령을 내리는 것이므로
+      # SSH, inventory 설정이 모두 필요 없습니다.
       - name: Run Ansible Playbook
         run: |
           pip install ansible
-          ansible-playbook -i inventory.ini deploy.yml
+          ansible-playbook deploy.yml # -i 옵션도 필요 없음
